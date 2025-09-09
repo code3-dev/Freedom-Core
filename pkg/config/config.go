@@ -14,7 +14,7 @@ type Config struct {
 
 func Load() *Config {
 	host := flag.String("host", getEnv("APP_HOST", "127.0.0.1"), "Server host")
-	port := flag.Int("port", getEnvInt("APP_PORT", 8080), "Server port")
+	port := flag.Int("port", getEnvInt("APP_PORT", 8087), "Server port")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\n", os.Args[0])

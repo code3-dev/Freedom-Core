@@ -8,6 +8,7 @@ import (
 )
 
 func StartCore(cfg *config.Config) {
-	srv := server.NewServer(":"+ strconv.Itoa(cfg.Port))
+	addr := ":" + strconv.Itoa(cfg.Port)
+	srv := &server.Server{Addr: addr}
 	srv.ListenAndServe()
 }

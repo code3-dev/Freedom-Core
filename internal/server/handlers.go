@@ -1,43 +1,14 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/Freedom-Guard/freedom-core/pkg/logger"
-	"github.com/Freedom-Guard/freedom-core/internal/xray"
 	"github.com/Freedom-Guard/freedom-core/internal/hiddify"
+	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 )
-
-func XRayStreamHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.Header().Set("Transfer-Encoding", "chunked")
-	w.WriteHeader(http.StatusOK)
-
-	flusher, ok := w.(http.Flusher)
-	if !ok {
-		http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
-		return
-	}
-
-	logger.Log(logger.INFO, "X-Ray streaming started")
-
-	for i := 0; i < 5; i++ {
-		part := fmt.Sprintf("XRay step %d: %s\n", i+1, xray.RunXRay("test"))
-		_, _ = w.Write([]byte(part))
-		flusher.Flush()
-		time.Sleep(1 * time.Second)
-	}
-
-	_, _ = w.Write([]byte("XRay stream finished\n"))
-	flusher.Flush()
-}
 
 func HiddifyStreamHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -45,6 +16,12 @@ func HiddifyStreamHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	args := r.URL.Query()["args"]
+	if len(args) == 0 {
+		http.Error(w, "Missing arguments", http.StatusBadRequest)
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("Transfer-Encoding", "chunked")
 	w.WriteHeader(http.StatusOK)
@@ -55,11 +32,46 @@ func HiddifyStreamHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Log(logger.INFO, "Hiddify streaming started")
+	logger.Log(logger.INFO, fmt.Sprintf("Hiddify streaming started with args: %v", args))
 
-	part := fmt.Sprintf("Hiddify result: %t\n", hiddify.RunHiddify("test"))
-	_, _ = w.Write([]byte(part))
-	flusher.Flush()
+	ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
+	defer cancel()
+
+	lines := make(chan string, 100)
+	resultChan := make(chan bool, 1)
+
+	go func() {
+		found := hiddify.RunHiddifyStream(ctx, args, func(line string) {
+			select {
+			case lines <- line:
+			case <-ctx.Done():
+			}
+		})
+		resultChan <- found
+		close(lines)
+	}()
+
+	for {
+		select {
+		case line, ok := <-lines:
+			if !ok {
+				lines = nil
+				continue
+			}
+			_, _ = w.Write([]byte(line + "\n"))
+			flusher.Flush()
+		case result := <-resultChan:
+			_, _ = w.Write([]byte(fmt.Sprintf("Hiddify result: %t\n", result)))
+			lines = nil
+		case <-ctx.Done():
+			_, _ = w.Write([]byte("Hiddify process timeout\n"))
+			lines = nil
+		}
+
+		if lines == nil {
+			break
+		}
+	}
 
 	_, _ = w.Write([]byte("Hiddify stream finished\n"))
 	flusher.Flush()

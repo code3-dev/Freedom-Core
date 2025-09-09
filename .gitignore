@@ -9,3 +9,7 @@ bin/
 build/
 *.log
 .docker/
+data/
+webui/
+tmp/
+cache.db

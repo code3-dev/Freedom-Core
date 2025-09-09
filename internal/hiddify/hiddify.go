@@ -2,6 +2,7 @@ package hiddify
 
 import (
 	"bufio"
+	"context"
 	"os/exec"
 	"strings"
 
@@ -9,32 +10,54 @@ import (
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 )
 
-func RunHiddify(input string) bool {
+func RunHiddifyStream(ctx context.Context, args []string, callback func(string)) bool {
 	path, err := installer.PrepareCore()
 	if err != nil {
-		logger.Log(logger.ERROR, "Hiddify core not installed at: " + path)
+		callback("Hiddify core not installed: " + err.Error())
+		return false
 	}
-	logger.Log(logger.INFO, "Hiddify core installed at: "+path)
 
-	cmd := exec.Command(path, input)
+	cmd := exec.CommandContext(ctx, path, args...)
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
-	cmd.Start()
+
+	if err := cmd.Start(); err != nil {
+		callback("Failed to start Hiddify: " + err.Error())
+		return false
+	}
 
 	found := false
-	scanner := bufio.NewScanner(stdout)
-	for scanner.Scan() {
-		line := scanner.Text()
-		logger.Log(logger.INFO, "Hiddify output: "+line)
-		if strings.Contains(line, "CORE STARTED") {
-			found = true
+	done := make(chan struct{})
+
+	go func() {
+		scanner := bufio.NewScanner(stdout)
+		for scanner.Scan() {
+			line := scanner.Text()
+			callback(line)
+			logger.Log(logger.INFO, "Hiddify stdout: "+line)
+			if strings.Contains(line, "CORE STARTED") {
+				found = true
+			}
 		}
+		done <- struct{}{}
+	}()
+
+	go func() {
+		scanner := bufio.NewScanner(stderr)
+		for scanner.Scan() {
+			line := scanner.Text()
+			callback(line)
+			logger.Log(logger.ERROR, "Hiddify stderr: "+line)
+		}
+		done <- struct{}{}
+	}()
+
+	<-done
+	<-done
+
+	if err := cmd.Wait(); err != nil {
+		callback("Hiddify process error: " + err.Error())
 	}
-	errScanner := bufio.NewScanner(stderr)
-	for errScanner.Scan() {
-		line := errScanner.Text()
-		logger.Log(logger.ERROR, "Hiddify error: "+line)
-	}
-	cmd.Wait()
+
 	return found
 }
