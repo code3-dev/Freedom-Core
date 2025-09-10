@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/Freedom-Guard/freedom-core/internal/hiddify"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
@@ -34,9 +33,7 @@ func HiddifyStreamHandler(w http.ResponseWriter, r *http.Request) {
 
 	logger.Log(logger.INFO, fmt.Sprintf("Hiddify streaming started with args: %v", args))
 
-	ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
-	defer cancel()
-
+	ctx := r.Context()
 	lines := make(chan string, 100)
 	resultChan := make(chan bool, 1)
 
@@ -48,10 +45,13 @@ func HiddifyStreamHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		})
 		resultChan <- found
+		close(resultChan)
 		close(lines)
 	}()
 
-	for {
+	streamOpen := true
+
+	for streamOpen {
 		select {
 		case line, ok := <-lines:
 			if !ok {
@@ -60,16 +60,16 @@ func HiddifyStreamHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			_, _ = w.Write([]byte(line + "\n"))
 			flusher.Flush()
-		case result := <-resultChan:
-			_, _ = w.Write([]byte(fmt.Sprintf("Hiddify result: %t\n", result)))
-			lines = nil
+		case result, ok := <-resultChan:
+			if ok {
+				_, _ = w.Write([]byte(fmt.Sprintf("Hiddify result: %t\n", result)))
+				flusher.Flush()
+			}
+			streamOpen = false
 		case <-ctx.Done():
-			_, _ = w.Write([]byte("Hiddify process timeout\n"))
-			lines = nil
-		}
-
-		if lines == nil {
-			break
+			_, _ = w.Write([]byte("Hiddify process stopped\n"))
+			flusher.Flush()
+			streamOpen = false
 		}
 	}
 

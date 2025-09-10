@@ -27,7 +27,7 @@ func RunHiddifyStream(ctx context.Context, args []string, callback func(string))
 	}
 
 	found := false
-	done := make(chan struct{})
+	done := make(chan struct{}, 2)
 
 	go func() {
 		scanner := bufio.NewScanner(stdout)
@@ -50,6 +50,11 @@ func RunHiddifyStream(ctx context.Context, args []string, callback func(string))
 			logger.Log(logger.ERROR, "Hiddify stderr: "+line)
 		}
 		done <- struct{}{}
+	}()
+
+	go func() {
+		<-ctx.Done()
+		_ = cmd.Process.Kill()
 	}()
 
 	<-done
