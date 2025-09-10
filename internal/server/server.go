@@ -20,7 +20,7 @@ func (s *Server) ListenAndServe() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hiddify/stream", HiddifyStreamHandler)
-	mux.HandleFunc("/hiddify/kill", KillHiddify)
+	mux.HandleFunc("/hiddify/kill", KillHiddifyHandler)
 
 	srv := &http.Server{
 		Addr:    s.Addr,
