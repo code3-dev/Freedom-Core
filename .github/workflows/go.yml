@@ -12,9 +12,9 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            exe: freedom-core
+            exe: freedom-core-linux-x64
           - os: windows-latest
-            exe: freedom-core.exe
+            exe: freedom-core-windows-x64.exe
 
     steps:
       - uses: actions/checkout@v4
@@ -31,10 +31,10 @@ jobs:
       - name: Copy Executable
         run: |
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            cp build/${{ matrix.exe }} ./
+            cp build/freedom-core ./${{ matrix.exe }}
             chmod +x ${{ matrix.exe }}
           else
-            copy build\Release\${{ matrix.exe }} .
+            copy build\Release\freedom-core.exe .\${{ matrix.exe }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -48,10 +48,14 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: freedom-core
+          name: freedom-core-linux-x64
+          path: artifacts
+      - uses: actions/download-artifact@v4
+        with:
+          name: freedom-core-windows-x64.exe
           path: artifacts
 
-      - name: Upload Executable to Release
+      - name: Upload Executables to Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
