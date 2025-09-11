@@ -12,29 +12,25 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
+            goos: linux
+            goarch: amd64
             exe: freedom-core-linux-x64
           - os: windows-latest
+            goos: windows
+            goarch: amd64
             exe: freedom-core-windows-x64.exe
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup CMake
-        uses: threeal/cmake-action@v2.1.0
-
-      - name: Configure
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
 
       - name: Build
-        run: cmake --build build --config Release --parallel
-
-      - name: Copy Executable
         run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            cp build/freedom-core ./${{ matrix.exe }}
-            chmod +x ${{ matrix.exe }}
-          else
-            copy build\Release\freedom-core.exe .\${{ matrix.exe }}
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o ${{ matrix.exe }} ./.
 
       - uses: actions/upload-artifact@v4
         with:
