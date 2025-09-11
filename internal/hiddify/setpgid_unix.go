@@ -2,7 +2,10 @@
 
 package hiddify
 
-import "syscall"
+import (
+	"os/exec"
+	"syscall"
+)
 
 func setpgid(cmd *exec.Cmd) {
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
