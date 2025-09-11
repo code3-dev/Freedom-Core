@@ -78,9 +78,8 @@ func HiddifyStreamHandler(w http.ResponseWriter, r *http.Request) {
 
 func KillHiddifyHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	hiddify.KillHiddify(ctx)
+	hiddify.KillHiddifyCrossPlatform(ctx)
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("hiddify process kill triggered"))
 	logger.Log(logger.INFO, "KillHiddify triggered")
 }
-
