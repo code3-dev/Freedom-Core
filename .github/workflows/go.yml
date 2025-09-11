@@ -1,0 +1,61 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            exe: freedom-core
+          - os: windows-latest
+            exe: freedom-core.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup CMake
+        uses: lukka/get-cmake@v3
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Copy Executable
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            cp build/${{ matrix.exe }} ./
+            chmod +x ${{ matrix.exe }}
+          else
+            copy build\Release\${{ matrix.exe }} .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.exe }}
+          path: ${{ matrix.exe }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: freedom-core
+          path: artifacts
+
+      - name: Upload Executable to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: freedom-core
+          files: artifacts/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

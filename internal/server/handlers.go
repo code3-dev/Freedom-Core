@@ -83,3 +83,4 @@ func KillHiddifyHandler(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("hiddify process kill triggered"))
 	logger.Log(logger.INFO, "KillHiddify triggered")
 }
+

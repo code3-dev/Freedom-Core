@@ -49,10 +49,10 @@ Or build an executable:
 
 ```bash
 # Windows
-go build -o freedom-core.exe ./cmd
+go build -o freedom-core.exe ./cmd/server
 
 # Linux / macOS
-go build -o freedom-core ./cmd
+go build -o freedom-core ./cmd/server
 ```
 
 * The service will start and show:

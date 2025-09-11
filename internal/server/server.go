@@ -19,8 +19,8 @@ func (s *Server) ListenAndServe() {
 	logger.Log(logger.INFO, "Server listening on "+s.Addr)
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/hiddify/stream", HiddifyStreamHandler)
-	mux.HandleFunc("/hiddify/kill", KillHiddifyHandler)
+	mux.HandleFunc("/hiddify/start", HiddifyStreamHandler)
+	mux.HandleFunc("/hiddify/stop", KillHiddifyHandler)
 
 	srv := &http.Server{
 		Addr:    s.Addr,
