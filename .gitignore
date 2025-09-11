@@ -1,6 +1,5 @@
-*.exe
+freedom-core.exe
 *.exe~
-*.dll
 *.so
 *.dylib
 *.test
