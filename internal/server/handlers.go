@@ -6,9 +6,15 @@ import (
 
 	"github.com/Freedom-Guard/freedom-core/internal/hiddify"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
+	helpers "github.com/Freedom-Guard/freedom-core/pkg/utils"
 )
 
 func HiddifyStreamHandler(w http.ResponseWriter, r *http.Request) {
+	if helpers.AllowDialog("آیا به هسته اچازه اچرا می‌دهید؟") {
+	} else {
+		logger.Log(logger.ERROR, "Core blocked dialog")
+		return
+	}
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
