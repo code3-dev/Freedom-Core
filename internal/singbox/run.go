@@ -18,6 +18,7 @@ import (
 	"sync"
 
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
+	helpers "github.com/Freedom-Guard/freedom-core/pkg/utils"
 )
 
 var releaseVersion = "1.12.8"
@@ -161,6 +162,14 @@ func PrepareCore() (string, error) {
 }
 
 func RunSingBoxStream(ctx context.Context, args []string, callback func(string)) bool {
+	allowed := helpers.AllowDialog("آیا اجازه می‌دهید هسته singbox اجرا شود؟ / Do you allow singbox Core to run?")
+	if allowed {
+		logger.Log(logger.INFO, "کاربر اجازه داد هسته اجرا شود / User allowed the Core to run")
+	} else {
+		logger.Log(logger.ERROR, "کاربر اجازه نداد هسته اجرا شود / User denied the Core")
+		return false
+	}
+
 	path, err := PrepareCore()
 	if err != nil {
 		callback("Sing-box core not installed: " + err.Error())

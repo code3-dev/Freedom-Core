@@ -18,6 +18,7 @@ import (
 	"sync"
 
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
+	helpers "github.com/Freedom-Guard/freedom-core/pkg/utils"
 )
 
 var releaseVersion = "3.2.0"
@@ -191,6 +192,14 @@ func PrepareCore() (string, error) {
 }
 
 func RunHiddifyStream(ctx context.Context, args []string, callback func(string)) bool {
+	allowed := helpers.AllowDialog("آیا اجازه می‌دهید هسته هیدیفای اجرا شود؟ / Do you allow Hiddify Core to run?")
+	if allowed {
+		logger.Log(logger.INFO, "کاربر اجازه داد هسته اجرا شود / User allowed the Core to run")
+	} else {
+		logger.Log(logger.ERROR, "کاربر اجازه نداد هسته اجرا شود / User denied the Core")
+		return false
+	}
+
 	path, err := PrepareCore()
 	if err != nil {
 		callback("Hiddify core not installed: " + err.Error())

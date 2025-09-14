@@ -32,7 +32,7 @@ jobs:
         run: |
           $env:GOOS="windows"
           $env:GOARCH="amd64"
-          go build -o freedom-core-windows-x64.exe ./cmd/server
+          go build -ldflags "-H=windowsgui" -o freedom-core-windows-x64.exe ./cmd/server
       - uses: actions/upload-artifact@v4
         with:
           name: freedom-core-windows-x64.exe
