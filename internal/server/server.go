@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
+	"github.com/Freedom-Guard/freedom-core/internal/proxy"
+
 )
 
 type Server struct {
@@ -25,6 +27,7 @@ func (s *Server) ListenAndServe() {
 	mux.HandleFunc("/singbox/stop", KillSingBoxHandler)
 	mux.HandleFunc("/xray/start", XrayStreamHandler)
 	mux.HandleFunc("/xray/stop", KillXrayHandler)
+	mux.HandleFunc("/proxy/start", sysproxy.ProxyStreamHandler)
 
 	srv := &http.Server{
 		Addr:    s.Addr,
