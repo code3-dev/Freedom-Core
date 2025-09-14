@@ -10,7 +10,7 @@ import (
 )
 
 func HiddifyStreamHandler(w http.ResponseWriter, r *http.Request) {
-	if helpers.AllowDialog("آیا به هسته اچازه اچرا می‌دهید؟") {
+	if helpers.AllowDialog("آیا به هسته هیدیفای اجازه اجرا می‌دهید؟") {
 	} else {
 		logger.Log(logger.ERROR, "Core blocked dialog")
 		return

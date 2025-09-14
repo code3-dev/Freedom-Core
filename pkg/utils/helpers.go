@@ -1,10 +1,10 @@
 package helpers
 
 import (
-	"github.com/sqweek/dialog"
+	"github.com/gen2brain/dlgs"
 )
 
 func AllowDialog(text string) bool {
-	ok := dialog.Message(text).Title("پیام").YesNo()
+	ok, _ := dlgs.Question("پیام", text, true)
 	return ok
 }
