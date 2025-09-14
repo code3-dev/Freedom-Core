@@ -23,6 +23,8 @@ func (s *Server) ListenAndServe() {
 	mux.HandleFunc("/hiddify/stop", KillHiddifyHandler)
 	mux.HandleFunc("/singbox/start", SingBoxStreamHandler)
 	mux.HandleFunc("/singbox/stop", KillSingBoxHandler)
+	mux.HandleFunc("/xray/start", XrayStreamHandler)
+	mux.HandleFunc("/xray/stop", KillXrayHandler)
 
 	srv := &http.Server{
 		Addr:    s.Addr,
