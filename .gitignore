@@ -1,4 +1,4 @@
-freedom-core.exe
+*.exe
 *.exe~
 *.so
 *.dylib
