@@ -16,6 +16,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"syscall"
 
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 	helpers "github.com/Freedom-Guard/freedom-core/pkg/utils"
@@ -207,6 +208,13 @@ func RunHiddifyStream(ctx context.Context, args []string, callback func(string))
 	}
 
 	cmd := exec.CommandContext(ctx, path, args...)
+
+	const CREATE_NO_WINDOW = 0x08000000
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: CREATE_NO_WINDOW,
+	}
+
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
 	if err := cmd.Start(); err != nil {

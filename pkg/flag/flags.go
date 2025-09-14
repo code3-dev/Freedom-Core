@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 	"github.com/Freedom-Guard/freedom-core/pkg/updater"
 )
 
@@ -20,6 +21,7 @@ func Parse() *Config {
 	port := flag.Int("port", 8087, "Server port")
 	showVersion := flag.Bool("version", false, "Show Freedom Core version")
 	update := flag.Bool("update", false, "Update Freedom Core to the latest version")
+	updateCores := flag.Bool("update-cores", false, "Update Cores to the latest version")
 
 	flag.Parse()
 
@@ -31,9 +33,18 @@ func Parse() *Config {
 	}
 
 	if *update {
-		fmt.Println("Checking for updates...")
+		logger.Log(logger.INFO, "Checking for updates...")
 		if err := updater.Update(); err != nil {
-			fmt.Println("Update failed:", err)
+			logger.Log(logger.INFO, "Update failed:"+err.Error())
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
+	if *updateCores {
+		logger.Log(logger.INFO, "Checking for update cores...")
+		if err := updater.DeleteCores(); err != nil {
+			logger.Log(logger.INFO, "Update failed:"+err.Error())
 			os.Exit(1)
 		}
 		os.Exit(0)
