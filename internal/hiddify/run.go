@@ -16,9 +16,10 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-	"syscall"
 
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
+	"github.com/Freedom-Guard/freedom-core/internal/run"
+
 )
 
 var releaseVersion = "3.2.0"
@@ -201,9 +202,8 @@ func RunHiddifyStream(ctx context.Context, args []string, callback func(string))
 
 	cmd := exec.CommandContext(ctx, path, args...)
 
-	if runtime.GOOS == "windows" {
-		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	}
+	run.SetupCmd(cmd)
+
 
 
 	stdout, _ := cmd.StdoutPipe()

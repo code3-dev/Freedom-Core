@@ -16,8 +16,8 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-	"syscall"
 
+	"github.com/Freedom-Guard/freedom-core/internal/run"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 )
 
@@ -171,10 +171,7 @@ func RunSingBoxStream(ctx context.Context, args []string, callback func(string))
 
 	cmd := exec.CommandContext(ctx, path, args...)
 
-	if runtime.GOOS == "windows" {
-		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	}
-
+	run.SetupCmd(cmd)
 
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
