@@ -201,9 +201,10 @@ func RunHiddifyStream(ctx context.Context, args []string, callback func(string))
 
 	cmd := exec.CommandContext(ctx, path, args...)
 
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		HideWindow: true,
-	}
+if runtime.GOOS == "windows" {
+    cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+}
+
 
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
