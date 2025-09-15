@@ -3,8 +3,9 @@ package core
 import (
 	"strconv"
 
-	"github.com/Freedom-Guard/freedom-core/internal/server"
 	flags "github.com/Freedom-Guard/freedom-core/pkg/flag"
+	"github.com/Freedom-Guard/freedom-core/internal/server"
+
 )
 
 func StartCore() {

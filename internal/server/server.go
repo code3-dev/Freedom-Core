@@ -10,6 +10,7 @@ import (
 
 	"github.com/Freedom-Guard/freedom-core/internal/logs"
 	sysproxy "github.com/Freedom-Guard/freedom-core/internal/proxy"
+	flags "github.com/Freedom-Guard/freedom-core/pkg/flag"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 	"github.com/getlantern/systray"
 )
@@ -32,9 +33,23 @@ func (s *Server) ListenAndServe() {
 	mux.HandleFunc("/logs", logs.LogPageHandler())
 	mux.HandleFunc("/logs/stream", logs.LogStreamHandler())
 
+	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(flags.AppConfig.Version))
+	})
+
+	mux.HandleFunc("/kill", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Server is shutting down"))
+		go func() {
+			time.Sleep(500 * time.Millisecond)
+			os.Exit(0)
+		}()
+	})
+
+	handler := corsMiddleware(mux)
+
 	srv := &http.Server{
 		Addr:    s.Addr,
-		Handler: mux,
+		Handler: handler,
 	}
 
 	stop := make(chan os.Signal, 1)
@@ -60,4 +75,21 @@ func (s *Server) ListenAndServe() {
 
 	systray.Quit()
 	os.Exit(0)
+}
+
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Expose-Headers", "Content-Length")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }

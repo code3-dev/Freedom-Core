@@ -19,7 +19,6 @@ import (
 	"syscall"
 
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
-	helpers "github.com/Freedom-Guard/freedom-core/pkg/utils"
 )
 
 var releaseVersion = "3.2.0"
@@ -193,13 +192,6 @@ func PrepareCore() (string, error) {
 }
 
 func RunHiddifyStream(ctx context.Context, args []string, callback func(string)) bool {
-	allowed := helpers.AllowDialog("آیا اجازه می‌دهید هسته هیدیفای اجرا شود؟ / Do you allow Hiddify Core to run?")
-	if allowed {
-		logger.Log(logger.INFO, "کاربر اجازه داد هسته اجرا شود / User allowed the Core to run")
-	} else {
-		logger.Log(logger.ERROR, "کاربر اجازه نداد هسته اجرا شود / User denied the Core")
-		return false
-	}
 
 	path, err := PrepareCore()
 	if err != nil {
@@ -209,10 +201,8 @@ func RunHiddifyStream(ctx context.Context, args []string, callback func(string))
 
 	cmd := exec.CommandContext(ctx, path, args...)
 
-	const CREATE_NO_WINDOW = 0x08000000
 	cmd.SysProcAttr = &syscall.SysProcAttr{
-		HideWindow:    true,
-		CreationFlags: CREATE_NO_WINDOW,
+		HideWindow: true,
 	}
 
 	stdout, _ := cmd.StdoutPipe()
