@@ -7,8 +7,8 @@ import (
 	flags "github.com/Freedom-Guard/freedom-core/pkg/flag"
 )
 
-func StartCore(cfg *flags.Config) {
-	addr := ":" + strconv.Itoa(cfg.Port)
+func StartCore() {
+	addr := ":" + strconv.Itoa(flags.AppConfig.Port)
 	srv := &server.Server{Addr: addr}
 	srv.ListenAndServe()
 }

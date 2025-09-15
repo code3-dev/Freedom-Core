@@ -8,9 +8,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Freedom-Guard/freedom-core/internal/logs"
+	sysproxy "github.com/Freedom-Guard/freedom-core/internal/proxy"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
-	"github.com/Freedom-Guard/freedom-core/internal/proxy"
-
+	"github.com/getlantern/systray"
 )
 
 type Server struct {
@@ -28,6 +29,8 @@ func (s *Server) ListenAndServe() {
 	mux.HandleFunc("/xray/start", XrayStreamHandler)
 	mux.HandleFunc("/xray/stop", KillXrayHandler)
 	mux.HandleFunc("/proxy/start", sysproxy.ProxyStreamHandler)
+	mux.HandleFunc("/logs", logs.LogPageHandler())
+	mux.HandleFunc("/logs/stream", logs.LogStreamHandler())
 
 	srv := &http.Server{
 		Addr:    s.Addr,
@@ -54,4 +57,7 @@ func (s *Server) ListenAndServe() {
 	}
 
 	logger.Log(logger.INFO, "Server exited cleanly")
+
+	systray.Quit()
+	os.Exit(0)
 }

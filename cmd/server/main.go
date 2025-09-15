@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	config := flags.Parse()
+	flags.Parse()
 	logger.Log(logger.INFO, "Freedom-Core is starting... 🚀")
 	go app.RunTray()
-	core.StartCore(config)
+	core.StartCore()
 }
