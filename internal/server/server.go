@@ -10,6 +10,7 @@ import (
 
 	"github.com/Freedom-Guard/freedom-core/internal/logs"
 	sysproxy "github.com/Freedom-Guard/freedom-core/internal/proxy"
+	dns "github.com/Freedom-Guard/freedom-core/internal/dns"
 	flags "github.com/Freedom-Guard/freedom-core/pkg/flag"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 	"github.com/getlantern/systray"
@@ -30,6 +31,7 @@ func (s *Server) ListenAndServe() {
 	mux.HandleFunc("/xray/start", XrayStreamHandler)
 	mux.HandleFunc("/xray/stop", KillXrayHandler)
 	mux.HandleFunc("/proxy/start", sysproxy.ProxyStreamHandler)
+	mux.HandleFunc("/dns/start", dns.DNSStreamHandler)
 	mux.HandleFunc("/logs", logs.LogPageHandler())
 	mux.HandleFunc("/logs/stream", logs.LogStreamHandler())
 
