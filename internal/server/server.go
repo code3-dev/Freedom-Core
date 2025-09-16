@@ -32,7 +32,6 @@ func (s *Server) ListenAndServe() {
 	mux.HandleFunc("/xray/stop", KillXrayHandler)
 	mux.HandleFunc("/proxy/start", sysproxy.ProxyStreamHandler)
 	mux.HandleFunc("/dns/start", dns.DNSStreamHandler)
-	mux.HandleFunc("/logs", logs.LogPageHandler())
 	mux.HandleFunc("/logs/stream", logs.LogStreamHandler())
 
 	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {

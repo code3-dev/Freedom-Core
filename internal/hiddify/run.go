@@ -17,9 +17,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 	"github.com/Freedom-Guard/freedom-core/internal/run"
-
+	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 )
 
 var releaseVersion = "3.2.0"
@@ -204,8 +203,6 @@ func RunHiddifyStream(ctx context.Context, args []string, callback func(string))
 
 	run.SetupCmd(cmd)
 
-
-
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
 	if err := cmd.Start(); err != nil {
@@ -228,7 +225,7 @@ func RunHiddifyStream(ctx context.Context, args []string, callback func(string))
 			if isErr {
 				logger.Log(logger.ERROR, "Hiddify stderr: "+line)
 			} else {
-				logger.Log(logger.INFO, "Hiddify stdout: "+line)
+				logger.Log(logger.DEBUG, "Hiddify stdout: "+line)
 				if strings.Contains(line, "CORE STARTED") {
 					found = true
 				}

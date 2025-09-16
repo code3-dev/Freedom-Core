@@ -8,36 +8,6 @@ import (
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 )
 
-func LogPageHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		html := `
-<!DOCTYPE html>
-<html>
-<head>
-<title>Logs</title>
-<style>
-body { font-family: monospace; background: #111; color: #0f0; padding: 10px; }
-pre { white-space: pre-wrap; word-wrap: break-word; }
-</style>
-</head>
-<body>
-<h2>Freedom Core Logs</h2>
-<pre id="log"></pre>
-<script>
-const logBox = document.getElementById("log");
-const evtSource = new EventSource("/logs/stream");
-evtSource.onmessage = function(e) {
-	logBox.innerText += e.data + "\n";
-	logBox.scrollTop = logBox.scrollHeight;
-};
-</script>
-</body>
-</html>`
-		w.Header().Set("Content-Type", "text/html")
-		fmt.Fprint(w, html)
-	}
-}
-
 func LogStreamHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/event-stream")

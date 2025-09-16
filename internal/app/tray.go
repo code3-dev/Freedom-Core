@@ -2,8 +2,6 @@ package app
 
 import (
 	"os"
-	"os/exec"
-	"runtime"
 	"strconv"
 
 	flags "github.com/Freedom-Guard/freedom-core/pkg/flag"
@@ -26,6 +24,7 @@ func onReady() {
 	systray.SetTooltip("Freedom Core")
 
 	mLogs := systray.AddMenuItem("Open Logs", "Show logs in browser")
+	mFWeb := systray.AddMenuItem("Open FCORE WEB", "Open FCORE WEB in browser")
 	mExit := systray.AddMenuItem("Exit", "Quit the application")
 
 	go func() {
@@ -33,6 +32,8 @@ func onReady() {
 			select {
 			case <-mLogs.ClickedCh:
 				openLogsWindow()
+			case <-mFWeb.ClickedCh:
+				OpenUrl("https://freedom-guard.github.io/FCORE-WEB-CLI/")
 			case <-mExit.ClickedCh:
 				logger.Log(logger.INFO, "Exiting application")
 				systray.Quit()
@@ -43,16 +44,8 @@ func onReady() {
 }
 
 func openLogsWindow() {
-
-	url := "http://localhost:" + strconv.Itoa(flags.AppConfig.Port) + "/logs"
-	switch runtime.GOOS {
-	case "windows":
-		exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
-	case "linux":
-		exec.Command("xdg-open", url).Start()
-	case "darwin":
-		exec.Command("open", url).Start()
-	}
+	url := "http://localhost:" + strconv.Itoa(flags.AppConfig.Port) + "/logs/stream"
+	OpenUrl(url)
 }
 
 func onExit() {

@@ -195,7 +195,7 @@ func RunSingBoxStream(ctx context.Context, args []string, callback func(string))
 			if isErr {
 				logger.Log(logger.ERROR, "sing-box stderr: "+line)
 			} else {
-				logger.Log(logger.INFO, "sing-box stdout: "+line)
+				logger.Log(logger.DEBUG, "sing-box stdout: "+line)
 				if strings.Contains(strings.ToLower(line), "started") {
 					found = true
 				}

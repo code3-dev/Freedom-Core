@@ -231,7 +231,7 @@ func RunXrayStream(ctx context.Context, args []string, callback func(string)) bo
 			if isErr {
 				logger.Log(logger.ERROR, "Xray stderr: "+line)
 			} else {
-				logger.Log(logger.INFO, "Xray stdout: "+line)
+				logger.Log(logger.DEBUG, "Xray stdout: "+line)
 				if strings.Contains(line, "started") {
 					found = true
 				}
