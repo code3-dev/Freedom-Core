@@ -8,9 +8,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Freedom-Guard/freedom-core/internal/logs"
-	sysproxy "github.com/Freedom-Guard/freedom-core/internal/proxy"
 	dns "github.com/Freedom-Guard/freedom-core/internal/dns"
+	"github.com/Freedom-Guard/freedom-core/internal/logs"
+	masque "github.com/Freedom-Guard/freedom-core/internal/masque"
+	sysproxy "github.com/Freedom-Guard/freedom-core/internal/proxy"
 	flags "github.com/Freedom-Guard/freedom-core/pkg/flag"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 	"github.com/getlantern/systray"
@@ -26,12 +27,19 @@ func (s *Server) ListenAndServe() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hiddify/start", HiddifyStreamHandler)
 	mux.HandleFunc("/hiddify/stop", KillHiddifyHandler)
+
 	mux.HandleFunc("/singbox/start", SingBoxStreamHandler)
 	mux.HandleFunc("/singbox/stop", KillSingBoxHandler)
+
 	mux.HandleFunc("/xray/start", XrayStreamHandler)
 	mux.HandleFunc("/xray/stop", KillXrayHandler)
+
+	mux.HandleFunc("/masque/start", masque.MasquePlusStreamHandler)
+	mux.HandleFunc("/masque/stop", masque.KillMasquePlusHandler)
+
 	mux.HandleFunc("/proxy/start", sysproxy.ProxyStreamHandler)
 	mux.HandleFunc("/dns/start", dns.DNSStreamHandler)
+
 	mux.HandleFunc("/logs/stream", logs.LogStreamHandler())
 
 	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
