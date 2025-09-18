@@ -35,6 +35,15 @@ func LogStreamHandler() http.HandlerFunc {
 	}
 }
 
+func ClearLogsHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		logger.ClearLogs()
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("logs cleared"))
+	}
+}
+
+
 func levelString(level logger.LogLevel) string {
 	switch level {
 	case logger.INFO:

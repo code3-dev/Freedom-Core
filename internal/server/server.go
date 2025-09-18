@@ -41,6 +41,7 @@ func (s *Server) ListenAndServe() {
 	mux.HandleFunc("/dns/start", dns.DNSStreamHandler)
 
 	mux.HandleFunc("/logs/stream", logs.LogStreamHandler())
+	mux.HandleFunc("/logs/clear", logs.ClearLogsHandler())
 
 	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(flags.AppConfig.Version))

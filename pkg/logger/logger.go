@@ -56,3 +56,10 @@ func GetLogs() []LogEntry {
 	copy(cp, logs)
 	return cp
 }
+
+func ClearLogs() {
+	mu.Lock()
+	defer mu.Unlock()
+
+	logs = []LogEntry{}
+}
