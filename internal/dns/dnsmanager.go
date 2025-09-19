@@ -3,13 +3,12 @@ package sysdns
 import (
 	"errors"
 	"fmt"
-	"os"
 	"os/exec"
 	"runtime"
 	"strings"
 
+	"github.com/Freedom-Guard/freedom-core/internal/app"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
-	helpers "github.com/Freedom-Guard/freedom-core/pkg/utils"
 )
 
 type DNSManager struct {
@@ -29,8 +28,8 @@ func (d *DNSManager) SetDNS(cfg *DNSConfig) error {
 
 	switch runtime.GOOS {
 	case "windows":
-		if !isAdmin() {
-			return runAsAdmin()
+		if !app.IsAdmin() {
+			return app.RunAsAdmin()
 		}
 		return setDNSWindows(cfg)
 	case "linux":
@@ -53,8 +52,8 @@ func (d *DNSManager) ClearDNS() error {
 	d.cfg = DNSConfig{}
 	switch runtime.GOOS {
 	case "windows":
-		if !isAdmin() {
-			return runAsAdmin()
+		if !app.IsAdmin() {
+			return app.RunAsAdmin()
 		}
 		return setDNSWindows(&DNSConfig{Primary: "", Secondary: ""})
 	case "linux":
@@ -62,40 +61,6 @@ func (d *DNSManager) ClearDNS() error {
 	case "darwin":
 		return setDNSMac(&DNSConfig{Primary: "", Secondary: ""})
 	}
-	return nil
-}
-
-// ---------------- Windows Helper ----------------
-func isAdmin() bool {
-	cmd := exec.Command("net", "session")
-	err := cmd.Run()
-	return err == nil
-}
-
-func runAsAdmin() error {
-	helpers.ShowInfo(
-		"Running as Administrator",
-		"The program is running with administrator privileges. Please retry the DNS registration request.",
-	)
-
-	exe, err := os.Executable()
-	if err != nil {
-		return err
-	}
-
-	psCmd := fmt.Sprintf("Start-Process -FilePath '%s' -Verb RunAs -WindowStyle Normal", exe)
-	cmd := exec.Command("powershell", "-Command", psCmd)
-
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-
-	err = cmd.Start()
-	if err != nil {
-		return err
-	}
-
-	os.Exit(0)
 	return nil
 }
 

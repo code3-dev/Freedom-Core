@@ -19,6 +19,7 @@ import (
 
 	"github.com/Freedom-Guard/freedom-core/internal/run"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
+	helpers "github.com/Freedom-Guard/freedom-core/pkg/utils"
 )
 
 var releaseVersion = "3.2.0"
@@ -200,8 +201,9 @@ func RunHiddifyStream(ctx context.Context, args []string, callback func(string))
 	}
 
 	cmd := exec.CommandContext(ctx, path, args...)
-
 	run.SetupCmd(cmd)
+
+	helpers.ShowInfo("Hiddify Core Status", "The Hiddify Core is Running.")
 
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()

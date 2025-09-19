@@ -19,6 +19,7 @@ import (
 
 	"github.com/Freedom-Guard/freedom-core/internal/run"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
+	helpers "github.com/Freedom-Guard/freedom-core/pkg/utils"
 )
 
 var releaseVersion = "25.9.11"
@@ -206,8 +207,9 @@ func RunXrayStream(ctx context.Context, args []string, callback func(string)) bo
 	}
 
 	cmd := exec.CommandContext(ctx, path, args...)
-
 	run.SetupCmd(cmd)
+
+	helpers.ShowInfo("Xray Core Status", "The Xray Core is Running.")
 
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()

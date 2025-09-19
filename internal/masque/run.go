@@ -19,6 +19,7 @@ import (
 
 	"github.com/Freedom-Guard/freedom-core/internal/run"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
+	helpers "github.com/Freedom-Guard/freedom-core/pkg/utils"
 )
 
 var releaseVersion = "v2.8.0"
@@ -209,6 +210,8 @@ func RunMasquePlusStream(ctx context.Context, args []string, callback func(strin
 	}
 	cmd := exec.CommandContext(ctx, path, args...)
 	run.SetupCmd(cmd)
+
+	helpers.ShowInfo("Masque Plus Status", "The masque-plus is Running.")
 
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()

@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Freedom-Guard/freedom-core/internal/app"
 	dns "github.com/Freedom-Guard/freedom-core/internal/dns"
 	"github.com/Freedom-Guard/freedom-core/internal/logs"
 	masque "github.com/Freedom-Guard/freedom-core/internal/masque"
@@ -42,6 +43,9 @@ func (s *Server) ListenAndServe() {
 
 	mux.HandleFunc("/logs/stream", logs.LogStreamHandler())
 	mux.HandleFunc("/logs/clear", logs.ClearLogsHandler())
+
+	mux.HandleFunc("/admin/req", app.RunAsAdminStream)
+	mux.HandleFunc("/admin/is", app.IsAdminHandler)
 
 	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(flags.AppConfig.Version))
