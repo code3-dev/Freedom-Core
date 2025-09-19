@@ -39,6 +39,7 @@ func (s *Server) ListenAndServe() {
 	mux.HandleFunc("/masque/stop", masque.KillMasquePlusHandler)
 
 	mux.HandleFunc("/proxy/start", sysproxy.ProxyStreamHandler)
+
 	mux.HandleFunc("/dns/start", dns.DNSStreamHandler)
 
 	mux.HandleFunc("/logs/stream", logs.LogStreamHandler())

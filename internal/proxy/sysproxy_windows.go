@@ -15,10 +15,6 @@ func newPlatformProxy() SysProxy {
 	return &winProxy{}
 }
 
-func PrepareCore() (string, error) {
-	return "proxy-core.exe", nil
-}
-
 func (w *winProxy) GetProxy() (*ProxyConfig, error) {
 	k, err := registry.OpenKey(registry.CURRENT_USER, `Software\Microsoft\Windows\CurrentVersion\Internet Settings`, registry.QUERY_VALUE)
 	if err != nil {
