@@ -13,6 +13,7 @@ import (
 	"github.com/Freedom-Guard/freedom-core/internal/logs"
 	masque "github.com/Freedom-Guard/freedom-core/internal/masque"
 	sysproxy "github.com/Freedom-Guard/freedom-core/internal/proxy"
+	"github.com/Freedom-Guard/freedom-core/internal/xray"
 	flags "github.com/Freedom-Guard/freedom-core/pkg/flag"
 	"github.com/Freedom-Guard/freedom-core/pkg/logger"
 	"github.com/getlantern/systray"
@@ -33,6 +34,7 @@ func (s *Server) ListenAndServe() {
 	mux.HandleFunc("/singbox/stop", KillSingBoxHandler)
 
 	mux.HandleFunc("/xray/start", XrayStreamHandler)
+	mux.HandleFunc("/xray/parse", xray.ParseXrayStreamHandler)
 	mux.HandleFunc("/xray/stop", KillXrayHandler)
 
 	mux.HandleFunc("/masque/start", masque.MasquePlusStreamHandler)
