@@ -56,7 +56,8 @@ jobs:
         with:
           go-version: '1.21'
       - name: Build macOS AMD64
-        run: GOOS=darwin GOARCH=amd64 go build -o freedom-core-macos-x64 ./cmd/server
+        run: |
+          go build -o freedom-core-macos-x64 ./cmd/server
       - uses: actions/upload-artifact@v4
         with:
           name: freedom-core-macos-x64
@@ -70,7 +71,8 @@ jobs:
         with:
           go-version: '1.21'
       - name: Build macOS ARM64
-        run: GOOS=darwin GOARCH=arm64 go build -o freedom-core-macos-arm64 ./cmd/server
+        run: |
+          go build -o freedom-core-macos-arm64 ./cmd/server
       - uses: actions/upload-artifact@v4
         with:
           name: freedom-core-macos-arm64
@@ -86,8 +88,6 @@ jobs:
       - name: Build Windows AMD64
         shell: pwsh
         run: |
-          $env:GOOS="windows"
-          $env:GOARCH="amd64"
           go build -ldflags "-H=windowsgui" -o freedom-core-windows-x64.exe ./cmd/server
       - uses: actions/upload-artifact@v4
         with:
@@ -104,8 +104,6 @@ jobs:
       - name: Build Windows 386
         shell: pwsh
         run: |
-          $env:GOOS="windows"
-          $env:GOARCH="386"
           go build -ldflags "-H=windowsgui" -o freedom-core-windows-x86.exe ./cmd/server
       - uses: actions/upload-artifact@v4
         with:
@@ -120,7 +118,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag || github.ref_name }}
           fetch-depth: 0
       - name: Download all artifacts
         uses: actions/download-artifact@v4
