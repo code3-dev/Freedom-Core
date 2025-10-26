@@ -50,6 +50,12 @@ go build -o freedom-core ./cmd/server
 
 # Linux 32-bit
 GOOS=linux GOARCH=386 go build -o freedom-core-linux-x86 ./cmd/server
+
+# macOS Intel (x64)
+GOOS=darwin GOARCH=amd64 go build -o freedom-core-macos-x64 ./cmd/server
+
+# macOS Apple Silicon (ARM64)
+GOOS=darwin GOARCH=arm64 go build -o freedom-core-macos-arm64 ./cmd/server
 ```
 
 * The service will start and show:
