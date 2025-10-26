@@ -10,6 +10,6 @@ import (
 func main() {
 	flags.Parse()
 	logger.Log(logger.INFO, "Freedom-Core is starting... 🚀")
-	go app.RunTray()
+	go app.RunTrayWrapper()
 	core.StartCore()
 }
