@@ -35,7 +35,7 @@
 ```bash
 git clone https://github.com/Freedom-Guard/freedom-core.git
 cd freedom-core
-````
+```
 
 ---
 
@@ -48,8 +48,11 @@ go run cmd/server/main.go
 Or build an executable:
 
 ```bash
-# Windows
+# Windows 64-bit
 go build -o freedom-core.exe ./cmd/server
+
+# Windows 32-bit
+GOOS=windows GOARCH=386 go build -o freedom-core-x86.exe ./cmd/server
 
 # Linux / macOS
 go build -o freedom-core ./cmd/server
