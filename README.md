@@ -48,9 +48,6 @@ GOOS=windows GOARCH=386 go build -o freedom-core-x86.exe ./cmd/server
 # Linux 64-bit
 go build -o freedom-core ./cmd/server
 
-# Linux 32-bit
-GOOS=linux GOARCH=386 go build -o freedom-core-linux-x86 ./cmd/server
-
 # macOS Intel (x64)
 GOOS=darwin GOARCH=amd64 go build -o freedom-core-macos-x64 ./cmd/server
 
