@@ -12,7 +12,7 @@ on:
         type: string
 
 jobs:
-  build-linux:
+  build-linux-amd64:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,12 +23,30 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libayatana-appindicator3-dev pkg-config
-      - name: Build Linux
+      - name: Build Linux AMD64
         run: GOOS=linux GOARCH=amd64 go build -o freedom-core-linux-x64 ./cmd/server
       - uses: actions/upload-artifact@v4
         with:
           name: freedom-core-linux-x64
           path: freedom-core-linux-x64
+
+  build-linux-386:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libayatana-appindicator3-dev pkg-config
+      - name: Build Linux 386
+        run: GOOS=linux GOARCH=386 go build -o freedom-core-linux-x86 ./cmd/server
+      - uses: actions/upload-artifact@v4
+        with:
+          name: freedom-core-linux-x86
+          path: freedom-core-linux-x86
 
   build-windows-amd64:
     runs-on: windows-latest
@@ -67,7 +85,7 @@ jobs:
           path: freedom-core-windows-x86.exe
 
   release:
-    needs: [build-linux, build-windows-amd64, build-windows-386]
+    needs: [build-linux-amd64, build-linux-386, build-windows-amd64, build-windows-386]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
     steps:
@@ -77,6 +95,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: freedom-core-linux-x64
+          path: artifacts
+      - uses: actions/download-artifact@v4
+        with:
+          name: freedom-core-linux-x86
           path: artifacts
       - uses: actions/download-artifact@v4
         with:
